@@ -1,29 +1,21 @@
 # Webserver Dockerfile
 
-FROM centos:7
+FROM rockylinux:9-minimal
 
-RUN sed -i 's/^mirrorlist=/#mirrorlist/g' /etc/yum.repos.d/CentOS-*.repo && \
-    sed -i 's|^#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo && \
-    yum update -y
+RUN dnf update -y && \
+    dnf install -y \
+    nginx-1.20.1 \
+    php-fpm-8.0 \
+    php-mysqlnd-8.0 && \
+    dnf clean all && \
+	rm -rf /var/cache/dnf/*
 
-RUN yum install epel-release -y && \
-	yum update -y && \
-	yum install -y \
-	nginx \
-	php \
-	php-mysqlnd \
-	php-fpm 
+# create service user
+RUN useradd -r -s /sbin/nologin nginx && \
+    useradd -r -s /sbin/nologin php-fpm
 
-RUN yum install openssh-server -y
-RUN yum install openssh-clients -y
-RUN sshd-keygen
-RUN sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 
-	
-RUN useradd -m user
-RUN useradd -m admin && echo "admin:letmein" | chpasswd
-
-COPY webfiles/ /usr/share/nginx/html
+COPY --chown=nginx:nginx webfiles/ /usr/share/nginx/html
 
 COPY configfiles/nginx.conf     /etc/nginx/nginx.conf
 COPY configfiles/php.ini        /etc/php.ini
@@ -32,13 +24,24 @@ COPY configfiles/php-fpm.conf   /etc/nginx/conf.d/php-fpm.conf
 COPY configfiles/docker-entrypoint.sh /
 
 RUN rm -f /usr/share/nginx/html/index.html /usr/share/nginx/html/nginx-logo.png /usr/share/nginx/html/poweredby.png
-RUN chmod +x /docker-entrypoint.sh && \
-    chown apache:apache /usr/share/nginx/html/*.php
+RUN RUN chmod -R 755 /usr/share/nginx/html && \ 
+    chmod +x /docker-entrypoint.sh && \ 
+    chown -R nginx:nginx /usr/share/nginx/html
 
+# Configure security headers
+RUN echo "server_tokens off;" >> /etc/nginx/nginx.conf && \
+    echo "add_header X-Frame-Options SAMEORIGIN;" >> /etc/nginx/nginx.conf && \
+    echo "add_header X-Content-Type-Options nosniff;" >> /etc/nginx/nginx.conf
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1
 
 EXPOSE 80
-EXPOSE 8004
-EXPOSE 2375
-EXPOSE 22
+# EXPOSE 8004
+# EXPOSE 2375
+# EXPOSE 22
+
+USER nginx
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
