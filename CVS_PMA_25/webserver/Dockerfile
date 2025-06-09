@@ -1,44 +1,31 @@
 # Webserver Dockerfile
-FROM centos:7
+FROM rockylinux:9
 
-RUN sed -i 's/^mirrorlist=/#mirrorlist/g' /etc/yum.repos.d/CentOS-*.repo && \
-    sed -i 's|^#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo && \
-    yum update -y
+RUN dnf update -y && \
+    dnf install -y nginx php-fpm php-mysqlnd && \
+    dnf clean all && \
+    rm -rf /var/log/httpd
 
-RUN yum install epel-release -y && \
-	yum update -y && \
-	yum install -y \
-	nginx \
-	php \
-	php-mysqlnd \
-	php-fpm 
-
-RUN yum install openssh-server -y
-RUN yum install openssh-clients -y
-RUN sshd-keygen
-RUN sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-
-	
-RUN useradd -m user
-RUN useradd -m admin && echo "admin:letmein" | chpasswd
+# create service user
+RUN id -u nginx 2>/dev/null || useradd -r -s /sbin/nologin nginx && \
+    id -u php-fpm 2>/dev/null || useradd -r -s /sbin/nologin php-fpm
 
 COPY webfiles/ /usr/share/nginx/html
 COPY configfiles/ca.pem /etc/ssl/ca.pem
 COPY configfiles/nginx.conf     /etc/nginx/nginx.conf
 COPY configfiles/php.ini        /etc/php.ini
 COPY configfiles/www.conf       /etc/php-fpm.d/www.conf
-COPY configfiles/php-fpm.conf   /etc/nginx/conf.d/php-fpm.conf
 COPY configfiles/docker-entrypoint.sh /
 
 RUN rm -f /usr/share/nginx/html/index.html /usr/share/nginx/html/nginx-logo.png /usr/share/nginx/html/poweredby.png
-RUN chmod +x /docker-entrypoint.sh && \
-    chmod 644 /etc/ssl/ca.pem && \
-    chown apache:apache /usr/share/nginx/html/*.php
+RUN chmod 755 /usr/share/nginx/html && \
+    find /usr/share/nginx/html -type d -exec chmod 755 {} \; && \
+    find /usr/share/nginx/html -type f -exec chmod 644 {} \;
 
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1
 
 EXPOSE 80
-EXPOSE 8004
-EXPOSE 2375
-EXPOSE 22
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
