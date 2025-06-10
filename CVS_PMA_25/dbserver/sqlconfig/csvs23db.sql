@@ -1,6 +1,9 @@
-DROP USER IF EXISTS 'wwwclient23'@'%' ;
-CREATE USER 'wwwclient23'@'%' IDENTIFIED BY 'wwwclient23Creds';
-GRANT SELECT,INSERT on csvs23db.* to 'wwwclient23'@'%';
+DROP USER IF EXISTS 'wwwclient23'@'203.0.113.200' ;
+CREATE USER 'wwwclient23'@'203.0.113.200' IDENTIFIED BY 'wwwclient23Creds';
+GRANT SELECT,INSERT on csvs23db.* to 'wwwclient23'@'203.0.113.200';
+ALTER USER 'wwwclient23'@'203.0.113.200' REQUIRE SSL;
+
+FLUSH PRIVILEGES;
 
 USE csvs23db;
 
