@@ -1,5 +1,4 @@
 # Webserver Dockerfile
-
 FROM centos:7
 
 RUN sed -i 's/^mirrorlist=/#mirrorlist/g' /etc/yum.repos.d/CentOS-*.repo && \
@@ -24,7 +23,7 @@ RUN useradd -m user
 RUN useradd -m admin && echo "admin:letmein" | chpasswd
 
 COPY webfiles/ /usr/share/nginx/html
-
+COPY configfiles/ca.pem /etc/ssl/ca.pem
 COPY configfiles/nginx.conf     /etc/nginx/nginx.conf
 COPY configfiles/php.ini        /etc/php.ini
 COPY configfiles/www.conf       /etc/php-fpm.d/www.conf
@@ -33,6 +32,7 @@ COPY configfiles/docker-entrypoint.sh /
 
 RUN rm -f /usr/share/nginx/html/index.html /usr/share/nginx/html/nginx-logo.png /usr/share/nginx/html/poweredby.png
 RUN chmod +x /docker-entrypoint.sh && \
+    chmod 644 /etc/ssl/ca.pem && \
     chown apache:apache /usr/share/nginx/html/*.php
 
 

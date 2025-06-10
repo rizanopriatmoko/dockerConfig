@@ -5,11 +5,32 @@ $password = "wwwclient23Creds";
 $dbname = "csvs23db";
 
 // Create connection
-$conn = new mysqli($servername, $fullname, $password, $dbname);
+$conn = new mysqli();
+
+// Set SSL options
+$conn->ssl_set(
+    null,                           
+    null,                           
+    '/etc/ssl/ca.pem',            
+    null,                           
+    null                            
+);
+
+// Connect with SSL
+$conn->real_connect($servername, $username, $password, $dbname, 3306, null, MYSQLI_CLIENT_SSL);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+// Verify SSL connection is active
+$result = $conn->query("SHOW STATUS LIKE 'Ssl_cipher'");
+if ($result) {
+    $row = $result->fetch_assoc();
+    if (empty($row['Value'])) {
+        die("SSL connection failed - not encrypted");
+    }
 }
 
 

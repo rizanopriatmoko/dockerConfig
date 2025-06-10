@@ -1,7 +1,11 @@
-# Database Dockerfile
+FROM mariadb:10.11
 
-FROM mariadb:10
+COPY mysqld.cnf /etc/mysql/mariadb.conf.d/
 
-COPY mysqld.cnf  /mysql/mysql.conf.d/mysqld.cnf
+COPY ssl/ /etc/mysql/ssl/
+
+RUN chmod 600 /etc/mysql/ssl/*.pem && \
+    chmod 644 /etc/mysql/mariadb.conf.d/*.cnf && \
+    chown -R mysql:mysql /etc/mysql/ssl/
 
 EXPOSE 3306
