@@ -1,8 +1,8 @@
 <?php
 $servername = "mysql-server";
-$username = "wwwclient23";
-$password = "wwwclient23Creds";
-$dbname = "csvs23db";
+$username = trim(file_get_contents('/run/secrets/db_user'));
+$password = trim(file_get_contents('/run/secrets/db_password'));
+$dbname = trim(file_get_contents('/run/secrets/db_name'));
 
 // Create connection with error handling
 $conn = new mysqli();

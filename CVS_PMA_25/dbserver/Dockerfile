@@ -1,7 +1,6 @@
 FROM mariadb:10.11
 
 COPY mysqld.cnf /etc/mysql/mariadb.conf.d/
-
 COPY ssl/ /etc/mysql/ssl/
 
 RUN chmod 600 /etc/mysql/ssl/*.pem && \
