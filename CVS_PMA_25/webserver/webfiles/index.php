@@ -1,5 +1,5 @@
 <?php
-$servername = "db.cyber23.test";
+$servername = "mysql-server";
 $username = "wwwclient23";
 $password = "wwwclient23Creds";
 $dbname = "csvs23db";

@@ -1,13 +1,11 @@
 <?php
-$servername = "db.cyber23.test";
+$servername = "mysql-server";
 $fullname = "wwwclient23";
 $password = "wwwclient23Creds";
 $dbname = "csvs23db";
 
 // Create connection
 $conn = new mysqli();
-
-// Set SSL options
 $conn->ssl_set(
     null,                           
     null,                           
@@ -17,7 +15,7 @@ $conn->ssl_set(
 );
 
 // Connect with SSL
-$conn->real_connect($servername, $username, $password, $dbname, 3306, null, MYSQLI_CLIENT_SSL);
+$conn->real_connect($servername, $fullname, $password, $dbname, 3306, null, MYSQLI_CLIENT_SSL);
 
 // Check connection
 if ($conn->connect_error) {
@@ -32,8 +30,6 @@ if ($result) {
         die("SSL connection failed - not encrypted");
     }
 }
-
-
 
 print_r($_POST);
 $fullnamedata = $_POST['fullname'];
