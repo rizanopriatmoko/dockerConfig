@@ -1,0 +1,53 @@
+secrets:
+  db_user:
+    file: ./secrets/db_user
+  db_password:
+    file: ./secrets/db_password
+  db_name:
+    file: ./secrets/db_name
+    
+networks:
+  csvs_dbserver_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 203.0.113.0/24
+services:
+  dbserver:
+    image: u5572396/csvs_dbserver_i
+    build:
+      context: ./dbserver
+      dockerfile: Dockerfile
+    container_name: u5572396_csvs_dbserver_c
+    hostname: mysql-server
+    volumes:
+      - ./dbserver/sqlconfig:/docker-entrypoint-initdb.d 
+    networks:
+      csvs_dbserver_net:
+        ipv4_address: 203.0.113.201
+    privileged: true
+    environment:
+      MYSQL_ROOT_PASSWORD: CorrectHorseBatteryStaple
+      MYSQL_DATABASE: csvs23db
+
+  webserver:
+    image: u5572396/csvs_webserver_i
+    build:
+      context: ./webserver
+      dockerfile: Dockerfile
+    container_name: u5572396_csvs_webserver_c
+    hostname: www.cyber23.test
+    secrets:
+      - db_user
+      - db_password
+      - db_name
+    networks:
+      csvs_dbserver_net:
+        ipv4_address: 203.0.113.200
+    ports:
+      - "80:80"
+    volumes:
+      - ./webserver/configfiles/ca.pem:/etc/ssl/ca.pem:ro
+    depends_on:
+      - dbserver
+
