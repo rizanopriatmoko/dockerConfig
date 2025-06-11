@@ -19,6 +19,7 @@ COPY configfiles/docker-entrypoint.sh /
 
 RUN rm -f /usr/share/nginx/html/index.html /usr/share/nginx/html/nginx-logo.png /usr/share/nginx/html/poweredby.png
 RUN chmod 755 /usr/share/nginx/html && \
+    chmod 600 /etc/ssl/ca.pem && \
     find /usr/share/nginx/html -type d -exec chmod 755 {} \; && \
     find /usr/share/nginx/html -type f -exec chmod 644 {} \;
 
