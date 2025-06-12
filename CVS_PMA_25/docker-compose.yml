@@ -14,10 +14,10 @@ networks:
         - subnet: 203.0.113.0/24
 services:
   dbserver:
-    image: u5572396/csvs_dbserver_i
     build:
       context: ./dbserver
       dockerfile: Dockerfile
+    image: u5572396/csvs_dbserver_i
     container_name: u5572396_csvs_dbserver_c
     hostname: mysql-server
     volumes:
@@ -31,10 +31,10 @@ services:
       MYSQL_DATABASE: csvs23db
 
   webserver:
-    image: u5572396/csvs_webserver_i
     build:
       context: ./webserver
       dockerfile: Dockerfile
+    image: u5572396/csvs_webserver_i
     container_name: u5572396_csvs_webserver_c
     hostname: www.cyber23.test
     secrets:
