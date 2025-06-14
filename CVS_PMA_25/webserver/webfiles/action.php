@@ -1,5 +1,5 @@
 <?php
-$servername = "mysql-server";
+$servername = "db.cyber23.test";
 $fullname = trim(file_get_contents('/run/secrets/db_user'));
 $password = trim(file_get_contents('/run/secrets/db_password'));
 $dbname = trim(file_get_contents('/run/secrets/db_name'));
@@ -9,7 +9,7 @@ $conn = new mysqli();
 $conn->ssl_set(
     null,                           
     null,                           
-    '/etc/ssl/ca.pem',            
+    '/etc/ssl/private/ca.pem',            
     null,                           
     null                            
 );
