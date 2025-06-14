@@ -17,6 +17,7 @@ COPY ssl/ /etc/mysql/ssl/
 
 RUN chmod 600 /etc/mysql/ssl/*.pem && \
     chmod 644 /etc/mysql/mariadb.conf.d/*.cnf && \
-    chown -R mysql:mysql /etc/mysql/ssl/
+    chown -R mysql:mysql /etc/mysql/ssl/ && \
+    chmod 700 /etc/mysql/ssl
 
 EXPOSE 3306
