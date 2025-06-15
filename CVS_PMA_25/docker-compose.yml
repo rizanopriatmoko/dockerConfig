@@ -5,6 +5,8 @@ secrets:
     file: ./secrets/db_password
   db_name:
     file: ./secrets/db_name
+  db_root_password:
+    file: ./secrets/db_root_password
     
 networks:
   csvs_dbserver_net:
@@ -27,8 +29,10 @@ services:
       csvs_dbserver_net:
         ipv4_address: 203.0.113.201
     security_opt: ["no-new-privileges:true"]
+    secrets: 
+      - db_root_password
     environment:
-      MYSQL_ROOT_PASSWORD: CorrectHorseBatteryStaple
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
       MYSQL_DATABASE: csvs23db
 
   webserver:
@@ -42,6 +46,7 @@ services:
       - db_user
       - db_password
       - db_name
+      - db_root_password
     networks:
       csvs_dbserver_net:
         ipv4_address: 203.0.113.200
