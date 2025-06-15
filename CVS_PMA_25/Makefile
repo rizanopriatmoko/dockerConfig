@@ -1,15 +1,43 @@
-setup:
-	cd dbserver && chmod 644 mysqld.cnf && chmod 600 ssl/*.pem && docker build -t u5572396/csvs_dbserver_i .
-	cd webserver && docker build -t u5572396/csvs_webserver_i .
+SHELL := /usr/bin/env bash
 
-up:
-	docker-compose up -d
+# all-make
+build:                       ## Build (or pull) every image
+	docker compose build
 
-down:
-	docker-compose down
+up:                          ## Start the stack
+	docker compose up -d
 
-build:
-	docker-compose up --build -d
+down:                        ## Stop the stack
+	docker compose down --remove-orphans
 
-clean:
-	docker-compose down -v
+logs:                        ## Tail logs
+	docker compose logs -f --tail=100
+
+clean:                       ## Wipe containers + volumes
+	docker compose down -v --remove-orphans
+
+# web-make
+web-build:            ## Build only the web image
+	docker compose build webserver
+
+web-up:               ## Recreate + start only the web container
+	docker compose up -d webserver
+
+web-logs:             ## Tail web-server logs
+	docker compose logs -f --tail=100 webserver
+
+web-shell:            ## Shell into the running web-server
+	docker compose exec webserver /bin/sh
+
+web-restart:		 ## Fast restart
+	docker compose restart webserver
+
+# db-make
+db-build:              ## Rebuild only dbserver image
+	docker compose build dbserver
+
+db-up:                 ## Recreate dbserver w/out touching the data
+	docker compose up -d dbserver
+
+db-restart:            ## Fast restart (no rebuild)
+	docker compose restart dbserver

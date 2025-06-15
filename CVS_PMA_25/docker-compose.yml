@@ -12,6 +12,7 @@ networks:
     ipam:
       config:
         - subnet: 203.0.113.0/24
+
 services:
   dbserver:
     build:
@@ -25,7 +26,7 @@ services:
     networks:
       csvs_dbserver_net:
         ipv4_address: 203.0.113.201
-    privileged: true
+    security_opt: ["no-new-privileges:true"]
     environment:
       MYSQL_ROOT_PASSWORD: CorrectHorseBatteryStaple
       MYSQL_DATABASE: csvs23db
