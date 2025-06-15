@@ -18,8 +18,7 @@ COPY configfiles/www.conf       /etc/php-fpm.d/www.conf
 COPY configfiles/docker-entrypoint.sh /
 
 RUN rm -f /usr/share/nginx/html/index.html /usr/share/nginx/html/nginx-logo.png /usr/share/nginx/html/poweredby.png
-RUN chmod 700 /etc/ssl/private && \          
-    chmod 600 /etc/ssl/private/ca.pem && \     
+RUN chmod 600 /etc/ssl/private/ca.pem && \     
     find /usr/share/nginx/html -type d -exec chmod 755 {} \; && \  
     find /usr/share/nginx/html -type f -exec chmod 644 {} \; && \  
     chown -R nginx:nginx /usr/share/nginx/html 

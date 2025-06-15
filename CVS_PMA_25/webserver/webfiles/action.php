@@ -1,5 +1,5 @@
 <?php
-$servername = "db.cyber23.test";
+$servername = "mysql-server";
 $fullname = trim(file_get_contents('/run/secrets/db_user'));
 $password = trim(file_get_contents('/run/secrets/db_password'));
 $dbname = trim(file_get_contents('/run/secrets/db_name'));
@@ -32,8 +32,13 @@ if ($result) {
 }
 
 print_r($_POST);
-$fullnamedata = $_POST['fullname'];
-$suggestiondata = $_POST['suggestion'];
+$fullnamedata = trim(filter_input(INPUT_POST, 'fullname',   FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
+$suggestiondata = trim(filter_input(INPUT_POST, 'suggestion', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
+
+if ($fullname === '' || $suggestion === '') {
+    http_response_code(400);
+    exit('Required fields missing');
+}
 
 $stmt = $conn->prepare("INSERT INTO suggestion (fullname, suggestion) VALUES (?, ?)");
 $stmt->bind_param("ss", $fullnamedata, $suggestiondata);

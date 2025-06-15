@@ -47,7 +47,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./webserver/configfiles/ca.pem:/etc/ssl/ca.pem:ro
+      - ./webserver/configfiles/ca.pem:/etc/ssl/private/ca.pem:ro
     depends_on:
       - dbserver
 
